@@ -206,7 +206,7 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 					//TE_SetupBeamRingPoint(start_pos, 20.0, maxdist+10.0, XBeamSprite, HaloSprite, 0, 1, 1.0, 90.0, 0.0, {128,0,255,255}, 10, 0);
 					//TE_SendToAll(2.0);
 					for (new i = 1; i <= MaxClients; i++) {
-						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Wards)) {
+						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Skills)) {
 							decl Float:TargetPos[3];
 							GetClientAbsOrigin(i, TargetPos);
 							if (GetVectorDistance(start_pos, TargetPos) <= maxdist) {

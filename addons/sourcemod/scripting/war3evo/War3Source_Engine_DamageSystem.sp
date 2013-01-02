@@ -92,7 +92,7 @@ public bool:InitNativesForwards()
 
 	CreateNative("W3ClassProc",Native_W3ClassProc);
 
-	CreateNative("W3IsSentryOwner",Native_W3IsSentryOwner);
+	CreateNative("W3IsOwnerSentry",Native_W3IsOwnerSentry);
 
 
 	FHOnW3TakeDmgAllPre=CreateGlobalForward("OnW3TakeDmgAllPre",ET_Hook,Param_Cell,Param_Cell,Param_Cell);
@@ -164,10 +164,16 @@ public OnClientDisconnect(client){
 	SDKUnhook(client,SDKHook_OnTakeDamage,SDK_Forwarded_OnTakeDamage); 
 }
 
-public Native_W3IsSentryOwner(Handle:plugin,numParams)
+public Native_W3IsOwnerSentry(Handle:plugin,numParams)
 {
 	new client=GetNativeCell(1);
-	new pSentry=GetNativeCell(2);
+	new bool:UseInternalInflictor=GetNativeCell(2);
+	new pSentry;
+	if(UseInternalInflictor)
+		pSentry=g_CurInflictor;
+	else
+		pSentry=GetNativeCell(3);
+
 	if(ValidPlayer(client))
 	{
 		if(IsValidEntity(pSentry)&&TF2_GetPlayerClass(client)==TFClass_Engineer)

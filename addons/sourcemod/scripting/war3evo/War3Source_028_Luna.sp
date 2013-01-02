@@ -28,7 +28,7 @@ new Float:EclipseRadius=500.0;
 new EclipseAmount[5]= {0,4,6,8,10};
 
 new SKILL_MOONBEAM,SKILL_BOUNCE,SKILL_AURA,ULT;
-new LightModel;
+//new LightModel;
 new XBeamSprite,CoreSprite,MoonSprite,BeamSprite,HaloSprite;
 //new BlueSprite;
 new Handle:ultCooldownCvar = INVALID_HANDLE;
@@ -51,37 +51,18 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if(GAMECSGO) {
-		strcopy(beamsnd,sizeof(beamsnd),"music/war3source/moonqueen/beam.mp3");
-		strcopy(lunasnd2,sizeof(lunasnd2),"music/war3source/flashbang_explode2.mp3");
-	}
-	else
-	{
-		strcopy(beamsnd,sizeof(beamsnd),"war3source/moonqueen/beam.mp3");
-		strcopy(lunasnd2,sizeof(lunasnd2),"war3source/flashbang_explode2.mp3");
-	}
+	strcopy(beamsnd,sizeof(beamsnd),"war3source/moonqueen/beam.mp3");
+	strcopy(lunasnd2,sizeof(lunasnd2),"war3source/flashbang_explode2.mp3");
 
 	War3_PrecacheSound( beamsnd );
-	if(GameCS()) {
-
-		War3_PrecacheSound( lunasnd2 );
-	}
 	//BeamSprite=War3_PrecacheBeamSprite();
 	HaloSprite=War3_PrecacheHaloSprite();
-	if(War3_GetGame() == Game_CSGO) {
-		CoreSprite = PrecacheModel( "effects/combinemuzzle1.vmt" );
-		MoonSprite = PrecacheModel( "particle/particle_glow_01" );
-		XBeamSprite = PrecacheModel( "materials/sprites/physbeam.vmt" );
-		//PrecacheModel("particle/particle_flares/particle_flare_004");
-	}
-	else {
-		CoreSprite = PrecacheModel( "materials/sprites/physcannon_blueflare1.vmt" );
-		MoonSprite = PrecacheModel( "materials/sprites/physcannon_bluecore1b.vmt");
-		//BlueSprite = PrecacheModel( "materials/sprites/physcannon_bluelight1.vmt" );
-		XBeamSprite = PrecacheModel( "materials/sprites/XBeam2.vmt" );
-		LightModel = PrecacheModel( "models/effects/vol_light.mdl" );
-		//PrecacheModel("particle/fire.vmt");
-	}
+	CoreSprite = PrecacheModel( "materials/sprites/physcannon_blueflare1.vmt" );
+	MoonSprite = PrecacheModel( "materials/sprites/physcannon_bluecore1b.vmt");
+	//BlueSprite = PrecacheModel( "materials/sprites/physcannon_bluelight1.vmt" );
+	XBeamSprite = PrecacheModel( "materials/sprites/XBeam2.vmt" );
+	//LightModel = PrecacheModel( "models/effects/vol_light.mdl" );
+	//PrecacheModel("particle/fire.vmt");
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -132,14 +113,6 @@ public OnW3PlayerAuraStateChanged(client,aura,bool:inAura,level)
 	{
 		//Yes, to let mod our damage done
 		War3_SetBuff(client,iDamageBonus,thisRaceID,inAura?BlessingIncrease[level]:0);
-		if(War3_GetGame() != Game_CSGO) {
-			if(inAura==true&&IsPlayerAlive(client)) {
-				decl Float:client_pos[3];
-				GetClientAbsOrigin(client,client_pos);
-				TE_SetupGlowSprite(client_pos, LightModel, 2.0, 1.0, 255);
-				TE_SendToAll();
-			}
-		}
 	}
 }
 
@@ -217,10 +190,6 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 								PrintHintText(i,"%T","You have been hit by a Moon Glaive!",i);
 							}
 						}
-					}
-					if(GameCS()) {
-						EmitSoundToAll(lunasnd2,victim);
-						EmitSoundToAll(lunasnd2,attacker);
 					}
 				}
 			}

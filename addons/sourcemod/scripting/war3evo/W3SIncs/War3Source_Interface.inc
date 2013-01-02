@@ -469,7 +469,6 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("W3GetDamageType");
 	MarkNativeAsOptional("W3GetDamageInflictor");
 	MarkNativeAsOptional("W3ChanceModifier");
-	MarkNativeAsOptional("W3ClassProc");
 	MarkNativeAsOptional("W3IsOwnerSentry");
 	MarkNativeAsOptional("W3Hint");
 	MarkNativeAsOptional("War3_GetRace");
@@ -1630,22 +1629,8 @@ native W3GetDamageInflictor();
  */
 
 //helper, directly uses last inflictor and damagetype
+// Acts like a DPS limiter
 native Float:W3ChanceModifier(attacker);
-
-/**
- * Takes into consideration how often a class usually procs damage on other players.
- * Usually pyro, heavy, and engineer tend to proc more often than the other classes
- * use this to figure out if your skill should proc or not based on player class
- *
- * Better usage is with passive skills rather than active.
- *
- * Good example is the new fireorb shopmenu item that no longer procs very often
- * for the heavy / pyro / engineer.
- *
- * @param client: client index.
- * @return bool: true to proc, false to not proc.
- */
-native bool:W3ClassProc(client);
 
 /**
  * Basically checks to see if this is a Owner's sentry.

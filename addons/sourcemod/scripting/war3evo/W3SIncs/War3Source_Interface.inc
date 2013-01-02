@@ -67,6 +67,8 @@ public APLRes:AskPluginLoad2(Handle:plugin,bool:late,String:error[],err_max)
 			LogError("AskPluginLoad2Custom did not return true, possible failure");
 		}
 	}
+	/*
+	// Not sure if we should keep this or if its just using up ram...
 	func=GetFunctionByName(plugin, "LoadCheck");
 	if(func!=INVALID_FUNCTION) { //non war3 plugins dont have this function
 		Call_StartFunction(plugin, func);
@@ -75,14 +77,17 @@ public APLRes:AskPluginLoad2(Handle:plugin,bool:late,String:error[],err_max)
 			return APLRes_SilentFailure;
 		}
 	}
-
+	*/
 	//do not load if these functions exists
+	// this function exists in a lot of plugins... may have to remove somday.
 	if(GetFunctionByName(plugin, "W3ONLY")!=INVALID_FUNCTION && !W3()) {
 		return APLRes_SilentFailure;
 	}
+	/*
 	if(GetFunctionByName(plugin, "SHONLY")!=INVALID_FUNCTION && !SH()) {
 		return APLRes_SilentFailure;
 	}
+	*/
 	return APLRes_Success;
 }
 /**********************

@@ -19,13 +19,11 @@
 public W3ONLY(){} //unload this?
 
 new thisRaceID, SKILL_HEADHUNTER, SKILL_TOTEM, SKILL_ASSAULT, ULT_TRANSFORM;
-new m_iAccount = -1, m_vecVelocity_0, m_vecVelocity_1, m_vecBaseVelocity; //offsets
 
 
 //new bool:hurt_flag = true;
 new bool:m_IsULT_TRANSFORMformed[MAXPLAYERSCUSTOM];
 new skulls[MAXPLAYERSCUSTOM];
-new ValveGameEnum:g_GameType;
 //Effects
 //new BeamSprite;
 new Laser;
@@ -69,25 +67,10 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnPluginStart()
 {
-	m_vecVelocity_0 = FindSendPropOffs("CBasePlayer","m_vecVelocity[0]");
+	//m_vecVelocity_0 = FindSendPropOffs("CBasePlayer","m_vecVelocity[0]");
 	
 	//HookEvent("player_hurt",PlayerHurtEvent);
 	//HookEvent("player_death",PlayerDeathEvent);
-	
-	g_GameType = War3_GetGame();
-	switch (g_GameType)
-	{
-		case Game_CS:
-		{
-			HookEvent("player_jump",PlayerJumpEvent);
-			m_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
-			m_vecVelocity_1 = FindSendPropOffs("CBasePlayer","m_vecVelocity[1]");
-			m_vecBaseVelocity = FindSendPropOffs("CBasePlayer","m_vecBaseVelocity");
-		}
-		case Game_TF:
-		{
-		}
-	}
 	
 	AddCommandListener(SayCommand, "say");
 	AddCommandListener(SayCommand, "say_team");
@@ -149,15 +132,8 @@ public OnWar3EventSpawn(client)
 			dollar *= skulls[client];
 			xp *= skulls[client];
 			
-			if(GameCS()){	
-				new old_health=GetClientHealth(client);
-				SetEntityHealth(client,old_health+hp);
-			}
-			else{
-			
-				War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,hp);
-			}
-			
+			War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,hp);
+
 			new old_XP = War3_GetXP(client,thisRaceID);
 			new kill_XP = W3GetKillXP(client);
 			if (xp > kill_XP)
@@ -167,37 +143,28 @@ public OnWar3EventSpawn(client)
 				War3_SetXP(client,thisRaceID,old_XP+xp);
 			}
 			
-			if (m_iAccount>0) //game with money
+			new max=W3GetMaxGold();
+
+			new old_credits=War3_GetGold(client);
+			//PrintToChat(client,"dollar %d",dollar);
+			dollar /= (max/10); // was dollar /= (max/6);
+			//PrintToChat(client,"dollar %d",dollar);
+			new new_credits = old_credits + dollar;
+			if (new_credits > max)
+			new_credits = max;
+			//PrintToChat(client,"new_credits %d",new_credits);
+			if(W3GetPlayerProp(client,bStatefulSpawn))
 			{
-				new old_cash=GetEntData(client, m_iAccount);
-				SetEntData(client, m_iAccount, old_cash + dollar);
-				if(W3GetPlayerProp(client,bStatefulSpawn)){
-					PrintToChat(client,"%T","[Totem Incanation] You gained {amount} HP, {amount} dollars and {amount} XP",client,0x04,0x01,hp,dollar,xp);
-				}
+				War3_SetGold(client,new_credits);
 			}
-			else
+			new_credits = War3_GetGold(client);
+
+			if (new_credits > 0)
 			{
-				new max=W3GetMaxGold();
-				
-				new old_credits=War3_GetGold(client);
-				//PrintToChat(client,"dollar %d",dollar);
-				dollar /= (max/10); // was dollar /= (max/6);
-				//PrintToChat(client,"dollar %d",dollar);
-				new new_credits = old_credits + dollar;
-				if (new_credits > max)
-				new_credits = max;
-				//PrintToChat(client,"new_credits %d",new_credits);
-				if(W3GetPlayerProp(client,bStatefulSpawn)){
-					War3_SetGold(client,new_credits);
-				}
-				new_credits = War3_GetGold(client);
-				
-				if (new_credits > 0){
-					dollar = new_credits-old_credits;
-				}
-				if(W3GetPlayerProp(client,bStatefulSpawn)){
-					PrintToChat(client,"%T","[Totem Incanation] You gained {amount} HP, {amount} credits and {amount} XP",client,0x04,0x01,hp,dollar,xp);
-				}
+				dollar = new_credits-old_credits;
+			}
+			if(W3GetPlayerProp(client,bStatefulSpawn)){
+				PrintToChat(client,"%T","[Totem Incanation] You gained {amount} HP, {amount} credits and {amount} XP",client,0x04,0x01,hp,dollar,xp);
 			}
 		}
 	}
@@ -462,8 +429,8 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			{
 				//assaultskip[client]+=2;
 				new Float:velocity[3]={0.0,0.0,0.0};
-				velocity[0]= GetEntDataFloat(client,m_vecVelocity_0);
-				velocity[1]= GetEntDataFloat(client,m_vecVelocity_1);
+				//velocity[0]= GetEntDataFloat(client,m_vecVelocity_0);
+				//velocity[1]= GetEntDataFloat(client,m_vecVelocity_1);
 				velocity[0]*=float(skill_SKILL_ASSAULT)*0.25;
 				velocity[1]*=float(skill_SKILL_ASSAULT)*0.25;
 				
@@ -477,7 +444,7 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 				PrintToChatAll("speed vector length %f",len);
 				*/
 				
-				SetEntDataVector(client,m_vecBaseVelocity,velocity,true);
+				//SetEntDataVector(client,m_vecBaseVelocity,velocity,true);
 				War3_CooldownMGR(client,assaultcooldown,thisRaceID,SKILL_ASSAULT,_,_);
 				
 				new String:wpnstr[32];
@@ -514,7 +481,7 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
 
-	if (g_GameType != Game_CS && (buttons & IN_JUMP)) //assault for non CS games
+	if (buttons & IN_JUMP) //assault for non CS games
 	{
 		if (War3_GetRace(client) == thisRaceID)
 		{
@@ -537,8 +504,8 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					
 					
 					
-					decl Float:velocity[3]; 
-					GetEntDataVector(client, m_vecVelocity_0, velocity); //gets all 3
+					decl Float:velocity[3];
+					//GetEntDataVector(client, m_vecVelocity_0, velocity); //gets all 3
 					
 					/*if he is not in speed ult
 					if (!(GetEntityFlags(client) & FL_ONGROUND))
@@ -842,32 +809,18 @@ String:buffer[], buffersize)
 
 stock bool:IsEquipmentMelee(const String:weapon[])
 {
-	switch (g_GameType)
-	{
-		case Game_CS:
-		{
-			return StrEqual(weapon,"weapon_knife");
-		}
-		case Game_DOD:
-		{
-			return (StrEqual(weapon,"weapon_amerknife") ||
-			StrEqual(weapon,"weapon_spade"));
-		}
-		case Game_TF:
-		{
-			return (StrEqual(weapon,"tf_weapon_knife") ||
-			StrEqual(weapon,"tf_weapon_shovel") ||
-			StrEqual(weapon,"tf_weapon_wrench") ||
-			StrEqual(weapon,"tf_weapon_bat") ||
-			StrEqual(weapon,"tf_weapon_bat_wood") ||
-			StrEqual(weapon,"tf_weapon_bonesaw") ||
-			StrEqual(weapon,"tf_weapon_bottle") ||
-			StrEqual(weapon,"tf_weapon_club") ||
-			StrEqual(weapon,"tf_weapon_fireaxe") ||
-			StrEqual(weapon,"tf_weapon_fists") ||
-			StrEqual(weapon,"tf_weapon_sword"));
-		}
-	}
+	return (StrEqual(weapon,"tf_weapon_knife") ||
+	StrEqual(weapon,"tf_weapon_shovel") ||
+	StrEqual(weapon,"tf_weapon_wrench") ||
+	StrEqual(weapon,"tf_weapon_bat") ||
+	StrEqual(weapon,"tf_weapon_bat_wood") ||
+	StrEqual(weapon,"tf_weapon_bonesaw") ||
+	StrEqual(weapon,"tf_weapon_bottle") ||
+	StrEqual(weapon,"tf_weapon_club") ||
+	StrEqual(weapon,"tf_weapon_fireaxe") ||
+	StrEqual(weapon,"tf_weapon_fists") ||
+	StrEqual(weapon,"tf_weapon_sword"));
+
 	return false;
 }
 

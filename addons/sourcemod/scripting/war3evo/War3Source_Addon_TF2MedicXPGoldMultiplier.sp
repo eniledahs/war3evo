@@ -5,9 +5,6 @@
 
 #include <tf2_stocks>
 
-public LoadCheck(){
-	return GameTF();
-}
 new Handle:XPMultiplierCVar;
 new Handle:GoldMultiplierCVar;
 

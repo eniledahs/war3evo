@@ -23,7 +23,7 @@ new String:helmSound2[]="physics/metal/metal_solid_impact_bullet3.wav";
 new String:helmSound3[]="physics/metal/metal_solid_impact_bullet4.wav";
 
 //global
-new ownerOffset;
+//new ownerOffset;
 
 
 enum{
@@ -148,7 +148,7 @@ public OnPluginStart()
 		MoneyOffsetCS=FindSendPropInfo("CCSPlayer","m_iAccount");
 	}
 
-	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
+	//ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
 }
 new bool:war3ready;
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -924,7 +924,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 	new bool:IsSentry = false;
 	if(ValidPlayer(attacker))
 	{
-		IsSentry = IS_sentryowner(attacker,W3GetDamageInflictor());
+		IsSentry = W3IsSentryOwner(attacker,W3GetDamageInflictor());
 	}
 	if(!IsSentry&&W3GetDamageIsBullet()&&ValidPlayer(victim)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
 	{
@@ -1054,6 +1054,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 	}
 }
 
+/*
 bool:IS_sentryowner(client,pSentry)
 {
 	if(ValidPlayer(client))
@@ -1078,6 +1079,7 @@ bool:IS_sentryowner(client,pSentry)
 	}
 	return false;
 }
+*/
 
 public Action:Unfrost(Handle:timer,any:client)
 {
@@ -1233,7 +1235,7 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 	new bool:IsSentry = false;
 	if(ValidPlayer(attacker))
 	{
-		IsSentry = IS_sentryowner(attacker,inflictor);
+		IsSentry = W3IsSentryOwner(attacker,inflictor);
 	}
 
 

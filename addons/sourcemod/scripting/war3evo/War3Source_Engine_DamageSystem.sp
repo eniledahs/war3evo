@@ -42,6 +42,8 @@ static const String:CLASSNAME_WITCH[]	 	= "witch";
 
 new dummyresult;
 
+//global
+new ownerOffset;
 
 new damagestack=0;
 
@@ -65,6 +67,8 @@ public OnPluginStart()
 	{
 		HookEvent("infected_hurt", EventInfectedHurt);
 	}
+
+	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
 }
 
 //cvar handle
@@ -85,6 +89,10 @@ public bool:InitNativesForwards()
 	CreateNative("W3GetDamageStack",NW3GetDamageStack);
 
 	CreateNative("W3ChanceModifier",Native_W3ChanceModifier);
+
+	CreateNative("W3ClassProc",Native_W3ClassProc);
+
+	CreateNative("W3IsSentryOwner",Native_W3IsSentryOwner);
 
 
 	FHOnW3TakeDmgAllPre=CreateGlobalForward("OnW3TakeDmgAllPre",ET_Hook,Param_Cell,Param_Cell,Param_Cell);
@@ -156,19 +164,98 @@ public OnClientDisconnect(client){
 	SDKUnhook(client,SDKHook_OnTakeDamage,SDK_Forwarded_OnTakeDamage); 
 }
 
+public Native_W3IsSentryOwner(Handle:plugin,numParams)
+{
+	new client=GetNativeCell(1);
+	new pSentry=GetNativeCell(2);
+	if(ValidPlayer(client))
+	{
+		if(IsValidEntity(pSentry)&&TF2_GetPlayerClass(client)==TFClass_Engineer)
+		{
+			decl String:netclass[32];
+			GetEntityNetClass(pSentry, netclass, sizeof(netclass));
+
+			if (strcmp(netclass, "CObjectSentrygun") == 0 || strcmp(netclass, "CObjectTeleporter") == 0 || strcmp(netclass, "CObjectDispenser") == 0)
+			{
+				if (GetEntDataEnt2(pSentry, ownerOffset) == client)
+					return true;
+			}
+		}
+	}
+	return false;
+}
 
 public Native_W3ChanceModifier(Handle:plugin,numParams)
 {
-	
+
 	new attacker=GetNativeCell(1);
 	//new inflictor=W3GetDamageInflictor();
 	//new damagetype=W3GetDamageType();
 	if(!GameTF()||attacker<=0 || attacker>MaxClients || !IsValidEdict(attacker)){
 		return _:1.0;
 	}
-	
-	
+
+
 	return _:ChanceModifier[attacker];
+}
+
+public Native_W3ClassProc(Handle:plugin,numParams)
+{
+
+	new client=GetNativeCell(1);
+	//new inflictor=W3GetDamageInflictor();
+	//new damagetype=W3GetDamageType();
+	if(!ValidPlayer(client,true)){
+		return _:false;
+	}
+	new chance;
+	switch (TF2_GetPlayerClass(client))
+	{
+		case TFClass_Scout:
+		{
+			chance = 55;
+		}
+		case TFClass_Sniper:
+		{
+			chance = 90;
+		}
+		case TFClass_Soldier:
+		{
+			chance = 45;
+		}
+		case TFClass_DemoMan:
+		{
+			chance = 80;
+		}
+		case TFClass_Medic:
+		{
+			chance = 30;
+		}
+		case TFClass_Heavy:
+		{
+			chance = 5;
+		}
+		case TFClass_Pyro:
+		{
+			chance = 5;
+		}
+		case TFClass_Spy:
+		{
+			chance = 65;
+		}
+		case TFClass_Engineer:
+		{
+			chance = 5;
+		}
+		default:
+		{
+			chance = 10;
+		}
+	}
+	if(GetRandomInt(1, 100) <= chance)
+		return true;
+
+	return false;
 }
 
 

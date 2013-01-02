@@ -469,6 +469,8 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("W3GetDamageType");
 	MarkNativeAsOptional("W3GetDamageInflictor");
 	MarkNativeAsOptional("W3ChanceModifier");
+	MarkNativeAsOptional("W3ClassProc");
+	MarkNativeAsOptional("W3IsSentryOwner");
 	MarkNativeAsOptional("W3Hint");
 	MarkNativeAsOptional("War3_GetRace");
 	MarkNativeAsOptional("War3_SetRace");
@@ -1629,6 +1631,34 @@ native W3GetDamageInflictor();
 
 //helper, directly uses last inflictor and damagetype
 native Float:W3ChanceModifier(attacker);
+
+/**
+ * Takes into consideration how often a class usually procs damage on other players.
+ * Usually pyro, heavy, and engineer tend to proc more often than the other classes
+ * use this to figure out if your skill should proc or not based on player class
+ *
+ * Better usage is with passive skills rather than active.
+ *
+ * Good example is the new fireorb shopmenu item that no longer procs very often
+ * for the heavy / pyro / engineer.
+ *
+ * @param client: client index.
+ * @return bool: true to proc, false to not proc.
+ */
+native bool:W3ClassProc(client);
+
+/**
+ * best use inside OnW3TakeDmgBullet or OnW3TakeDmgBullet or SDKHooks calls that have inflictors
+ * where you can use this code:
+ *  new inflictor = W3GetDamageInflictor();
+ *  then pass the inflictor as the entity below:
+ *
+ * @param client: client you wish to check as the owner
+ * @param entity: entity you wish to check that maybe a sentry
+ * @param return: true if the client is a sentry owner and the entity is the owned sentry
+ *
+ */
+native bool:W3IsSentryOwner(client,entity);
 
 //print via hint engine. format accepts translations
 native W3Hint(client,W3HintPriority:type=HINT_LOWEST,Float:duration=5.0,String:format[],any:...);

@@ -1,10 +1,6 @@
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
-public LoadCheck() {
-	return GameTF();
-}
-
 public Plugin:myinfo=
 {
 	name="W3S Engine XP Gold TF",

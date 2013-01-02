@@ -90,8 +90,6 @@ public bool:InitNativesForwards()
 
 	CreateNative("W3ChanceModifier",Native_W3ChanceModifier);
 
-	CreateNative("W3ClassProc",Native_W3ClassProc);
-
 	CreateNative("W3IsOwnerSentry",Native_W3IsOwnerSentry);
 
 
@@ -204,66 +202,6 @@ public Native_W3ChanceModifier(Handle:plugin,numParams)
 
 	return _:ChanceModifier[attacker];
 }
-
-public Native_W3ClassProc(Handle:plugin,numParams)
-{
-
-	new client=GetNativeCell(1);
-	//new inflictor=W3GetDamageInflictor();
-	//new damagetype=W3GetDamageType();
-	if(!ValidPlayer(client,true)){
-		return _:false;
-	}
-	new chance;
-	switch (TF2_GetPlayerClass(client))
-	{
-		case TFClass_Scout:
-		{
-			chance = 55;
-		}
-		case TFClass_Sniper:
-		{
-			chance = 90;
-		}
-		case TFClass_Soldier:
-		{
-			chance = 45;
-		}
-		case TFClass_DemoMan:
-		{
-			chance = 80;
-		}
-		case TFClass_Medic:
-		{
-			chance = 30;
-		}
-		case TFClass_Heavy:
-		{
-			chance = 5;
-		}
-		case TFClass_Pyro:
-		{
-			chance = 5;
-		}
-		case TFClass_Spy:
-		{
-			chance = 65;
-		}
-		case TFClass_Engineer:
-		{
-			chance = 5;
-		}
-		default:
-		{
-			chance = 10;
-		}
-	}
-	if(GetRandomInt(1, 100) <= chance)
-		return true;
-
-	return false;
-}
-
 
 public Action:SDK_Forwarded_OnTakeDamage(victim,&attacker,&inflictor,&Float:damage,&damagetype)
 {
